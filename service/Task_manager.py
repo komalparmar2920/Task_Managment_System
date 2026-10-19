@@ -182,4 +182,50 @@ class TaskManager:
             if user.user_id == task.assigned_user_id:
                 return user.name
         return "Not Assigned"
+
+    def edit_task(self,task_id,**updates):
+        if not isinstance(task_id,str) or not task_id.strip():
+            raise ValidationError("Task ID cannot be empty.")
+        allowed_fields = {"title", "description"}
+        if not updates:
+            raise ValidationError("No updates provided.")
+
+        unknown_fields = set(updates) - allowed_fields            
+        if unknown_fields:
+            raise ValidationError(f"Invalid fields: {', '.join(unknown_fields)}")
+
+        for field, value in updates.items():
+            if not isinstance(value, str) or not value.strip():
+                raise ValidationError(f"{field.capitalize()} cannot be empty.")
+
+        task = self.get_task(task_id)
+        previous_values = {field: getattr(task, field) for field in updates
+        }
         
+        for field,value in updates.items():
+            setattr(task,field,value.strip())
+
+        try:
+            self._save_tasks()
+        except Exception as error:
+            for field, value in previous_values.items():
+                setattr(task, field, value)
+            if isinstance(error, DataFileError):
+                raise
+            raise DataFileError(f"Could not save task updates: {error}")
+        return task
+
+    def delete_task(self, task_id):
+        if not isinstance(task_id, str) or not task_id.strip():
+            raise ValidationError("Task ID cannot be empty.")
+        task = self.get_task(task_id)
+        original_tasks = self.tasks.index(task)
+        self.tasks.remove(task)
+        try:
+            self._save_tasks()
+        except Exception as error:
+            self.tasks.insert(original_tasks, task)
+            if isinstance(error, DataFileError):
+                raise
+            raise DataFileError(f"Could not delete task: {error}") 
+        return task               

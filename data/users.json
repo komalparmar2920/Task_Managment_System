@@ -8,5 +8,10 @@
         "user_id": 2,
         "name": "mayur",
         "email": "mayur33@gmail.com"
+    },
+    {
+        "user_id": 3,
+        "name": "rutvik",
+        "email": "rv33@gmail.com"
     }
 ]

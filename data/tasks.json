@@ -5,5 +5,12 @@
         "description": "learn Python",
         "status": "Completed",
         "assigned_user_id": null
+    },
+    {
+        "task_id": 102,
+        "title": "HTML5",
+        "description": "learn basic and advance HTML",
+        "status": "Pending",
+        "assigned_user_id": 3
     }
 ]
